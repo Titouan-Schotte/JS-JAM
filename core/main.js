@@ -5,29 +5,32 @@ let playerSpeed = 1; // Vitesse de déplacement du joueur
 let monsterSpeed = 1; // Vitesse de déplacement du monstre
 let lastMonsterMoveTime = 0;
 let monsterMoveInterval = 1000; // Interval de déplacement du monstre en millisecondes
+let layerImages = [];
+let layer = [];
+
+var tiledmap;
+
+function preload() {
+    tiledmap = loadTiledMap("map1", "core") 
+}
 
 function setup() {
-    createCanvas(mapData.width * tileSize, mapData.height * tileSize);
-    player = new Player(0, 0); // Position initiale du joueur (0, 0) à modifier selon votre carte
+    createCanvas(640, 640/*data.width * tileSize, data.height * tileSize*/);
+    player = new Player(2, 2); // Position initiale du joueur (0, 0) à modifier selon votre carte
     monsters.push(new Monster(mapData.width - 1, mapData.height - 1)); // Position initiale du premier monstre (coin opposé)
     monsters.push(new Monster(3, 3)); // Ajout d'un second monstre à une position différente
     frameRate(20); // Définit le nombre de frames par seconde (FPS)
+    
+    layer = getTilemapLayers(tiledmap);
+    layerImages = getTilemapImages(tiledmap);
 }
 
 function draw() {
     background(255);
     // Afficher la carte
-    for (let x = 0; x < mapData.width; x++) {
-        for (let y = 0; y < mapData.height; y++) {
-            let index = x + y * mapData.width;
-            let tile = mapData.layers[0].data[index];
-            if (tile !== 0) {
-                // Dessiner la tuile
-                fill(100);
-                rect(x * tileSize, y * tileSize, tileSize, tileSize);
-            }
-        }
-    }
+    image(layerImages[0], 0, 0);
+    image(layerImages[1], 0, 0);
+
     // Dessiner le joueur
     player.display();
 
