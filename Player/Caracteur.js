@@ -91,6 +91,7 @@ class Player {
 specialAttack(enemy) {
     const damage = 10;
     enemy.health -= damage;
+
    
 };
 
@@ -101,10 +102,13 @@ ultimateAttack(enemy) {
     const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
         let damage;
         let message;
-
-        if (chance < 0.3) { // 30% de chance d'utiliser une attaque normale
+            // l'animation  de l'attaque ultimat et automatique il fait l'animation de passif
+        if (chance < 0.3) { 
+            // passife 
             damage = this.equippedItem.damage;
+
             message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}.`;
+            // je doit relie ca avec les animation  de combat ou il y a une animation d'attaque special qui est lancée mais qui 
         } else if (chance < 0.7) { // 40% de chance d'utiliser une attaque spéciale avec moins de dégâts
             damage = 10;
             enemy.health -= 5; // -5 HP pour utiliser l'attaque spéciale
