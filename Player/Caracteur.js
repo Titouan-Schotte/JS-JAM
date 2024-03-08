@@ -38,15 +38,15 @@ class Inventory {
 }
 
 class Player {
-    constructor(name, petName, health, level, experience, mana, energy, money, classe, pouvoir, position) {
+    constructor(name,  health, level, experience,  souls, classe, pouvoir, position) {
         this.name = name;
-        this.petName = petName;
+        
         this.health = health;
         this.level = level;
         this.experience = experience;
-        this.mana = mana;
-        this.energy = energy;
-        this.money = money;
+
+
+        this.souls = souls;
         this.classe = classe;
         this.pouvoir = pouvoir;
         this.position = position;
@@ -65,7 +65,7 @@ class Player {
 
     equipItem(item) {
         this.equippedItem = item;
-    }
+    }//encas plus 
 
     useObject(item) {
         this.health += item.heal;
@@ -79,6 +79,55 @@ class Player {
         }
     }
 }
+   //  attaque normale
+   normalAttack(enemy) {
+    const damage = this.equippedItem.damage;
+    enemy.health -= damage;
+    
+    
+};
+
+// attaque spéciale
+specialAttack(enemy) {
+    const damage = 10;
+    enemy.health -= damage;
+   
+};
+
+//  attaque ultime
+ultimateAttack(enemy) {
+    ultimateAttack(enemy) {
+        const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
+        let damage;
+        let message;
+
+        if (chance < 0.3) { // 30% de chance d'utiliser une attaque normale
+            damage = this.equippedItem.damage;
+            message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}.`;
+        } else if (chance < 0.7) { // 40% de chance d'utiliser une attaque spéciale avec moins de dégâts
+            damage = 10;
+            enemy.health -= 5; // -5 HP pour utiliser l'attaque spéciale
+            message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}. You took 5 points of damage due to the strain of the attack.`;
+        } else { // 30% de chance d'utiliser une attaque spéciale avec plus de dégâts
+            damage = 20;
+            enemy.health -= 10; // -10 HP pour utiliser l'attaque spéciale
+            message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}. You took 10 points of damage due to the strain of the attack.`;
+        }
+
+        enemy.health -= damage; // Applique les dégâts à l'ennemi
+        return message;
+    }
+};
+
+//  attaque normale avec soin
+healAttack(enemy) {
+    const damage = 35;
+    enemy.health += damage;
+    
+};
+
+
+
 
 class Enemy {
     constructor(name, health, damage) {
@@ -87,3 +136,4 @@ class Enemy {
         this.damage = damage;
     }
 }
+
