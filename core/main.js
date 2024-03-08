@@ -8,6 +8,7 @@ function setup() {
     player = new Player(3, 3); // Position initiale du joueur (0, 0) à modifier selon votre carte
     monsters.push(new Monster(mapData.width - 3, mapData.height - 3)); // Position initiale du premier monstre (coin opposé)
     monsters.push(new Monster(3, 15)); // Ajout d'un second monstre à une position différente
+    monsters.push(new Monster(15, 15)); // Ajout d'un second monstre à une position différente
     frameRate(60); // Définit le nombre de frames par seconde (FPS)
 }
 

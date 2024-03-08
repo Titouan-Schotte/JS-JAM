@@ -21,7 +21,6 @@ class Player {
         // Limite les mouvements à l'intérieur de la zone de jeu
         newX = constrain(newX, 0, mapData.width - 1);
         newY = constrain(newY, 0, mapData.height - 1);
-        console.log(this.isValidMove(newX, newY, movementType))
         if (this.isValidMove(newX, newY, movementType)) {
             this.x = newX;
             this.y = newY;
