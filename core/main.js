@@ -2,6 +2,14 @@ let player;
 let monsters = [];
 let tileSize = 32;
 let playerSpeed = 0.1; // Vitesse de déplacement du joueur
+let layer = [];
+let layerImages = [];
+
+var tiledmap;
+
+function preload() {
+    tiledmap = loadTiledMap("map1", "core");
+}
 
 function setup() {
     createCanvas(mapData.width * tileSize, mapData.height * tileSize);
@@ -10,6 +18,8 @@ function setup() {
     monsters.push(new Monster(3, 15)); // Ajout d'un second monstre à une position différente
     monsters.push(new Monster(15, 15)); // Ajout d'un second monstre à une position différente
     frameRate(60); // Définit le nombre de frames par seconde (FPS)
+    layer = getTilemapLayers(tiledmap);
+    layerImages = getTilemapImages(tiledmap);
 }
 
 function draw() {
@@ -26,6 +36,8 @@ function draw() {
             }
         }
     }
+    image(layerImages[0], 0, 0);
+    image(layerImages[1], 0, 0);
     // Dessiner le joueur
     player.display();
 
@@ -44,10 +56,10 @@ function draw() {
         // Déplacer les monstres à intervalles réguliers
         for (let monster of monsters) {
             // Calculer le nouveau chemin du monstre
+            monster.display();
             monster.findShortestPath(player.x, player.y);
             monster.move();
             // Dessiner le monstre
-            monster.display();
             //monster.takeDamage(1)
         }
 
