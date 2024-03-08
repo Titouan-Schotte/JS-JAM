@@ -96,8 +96,9 @@ specialAttack(enemy) {
 
 //  attaque ultime
 ultimateAttack(enemy) {
-    ultimateAttack(enemy) {
-        const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
+    const damage = 50;
+    enemy.health -= damage;
+    const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
         let damage;
         let message;
 
@@ -116,7 +117,7 @@ ultimateAttack(enemy) {
 
         enemy.health -= damage; // Applique les dégâts à l'ennemi
         return message;
-    }
+    
 };
 
 //  attaque normale avec soin
