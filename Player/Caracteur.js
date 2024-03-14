@@ -38,14 +38,11 @@ class Inventory {
 }
 
 class Player {
-    constructor(name,  health, level, experience,  souls, classe, pouvoir, position) {
+    constructor(name, health, level, experience, souls, classe, pouvoir, position) {
         this.name = name;
-        
         this.health = health;
         this.level = level;
         this.experience = experience;
-
-
         this.souls = souls;
         this.classe = classe;
         this.pouvoir = pouvoir;
@@ -65,7 +62,7 @@ class Player {
 
     equipItem(item) {
         this.equippedItem = item;
-    }//encas plus 
+    }
 
     useObject(item) {
         this.health += item.heal;
@@ -78,58 +75,64 @@ class Player {
             this.inventory.items.splice(index, 1);
         }
     }
+    levelUP() {
+        // he need 25 souls to level up his level
+        if  (this.souls >= 25) {
+            this.level++;
+            this.heal +=50 ;// evry level  add +50 health will change this after
+            this.attackPower+=4;//evry level add +4 attack power this's also will change
+            this.defensePower+=1;//every level add +1 defense power
+            this.lifesteal +=5;//evry  level add +5 lifesteal, it means that when the player give damages to an enemy 
+            //he will heal hoimsealf with  5 hp
+            this.souls -=25 ;//
+        } else {
+            console.log("You don't have enough souls!");
+        }
 }
-   //  attaque normale
-   normalAttack(enemy) {
-    const damage = this.equippedItem.damage;
-    enemy.health -= damage;
-    
-    
-};
 
-// attaque spéciale
-specialAttack(enemy) {
-    const damage = 10;
-    enemy.health -= damage;
+    // Méthode pour attaque normale
+    normalAttack(enemy) {
+        const damage = this.equippedItem.damage;
+        enemy.health -= damage;
+    }
 
-   
-};
+    // Méthode pour attaque spéciale
+    specialAttack(enemy) {
+        const damage = 10;
+        enemy.health -= damage;
+    }
 
-//  attaque ultime
-ultimateAttack(enemy) {
-    const damage = 50;
-    enemy.health -= damage;
-    const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
-        let damage;
+    // Méthode pour attaque ultime
+    ultimateAttack(enemy) {
+        const damage = 50;
+        enemy.health -= damage;
+        const chance = Math.random(); // Génère un nombre aléatoire entre 0 et 1
         let message;
-            // l'animation  de l'attaque ultimat et automatique il fait l'animation de passif
-        if (chance < 0.3) { 
-            // passife 
-            damage = this.equippedItem.damage;
 
+        if (chance < 0.3) { 
+            damage = this.equippedItem.damage;
             message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}.`;
-            // je doit relie ca avec les animation  de combat ou il y a une animation d'attaque special qui est lancée mais qui 
-        } else if (chance < 0.7) { // 40% de chance d'utiliser une attaque spéciale avec moins de dégâts
+        } else if (chance < 0.7) {
             damage = 10;
-            enemy.health -= 5; // -5 HP pour utiliser l'attaque spéciale
+            enemy.health -= 5;
             message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}. You took 5 points of damage due to the strain of the attack.`;
-        } else { // 30% de chance d'utiliser une attaque spéciale avec plus de dégâts
+        } else {
             damage = 20;
-            enemy.health -= 10; // -10 HP pour utiliser l'attaque spéciale
+            enemy.health -= 10;
             message = `Ultimate Attack: You inflicted ${damage} points of damage to ${enemy.name}. You took 10 points of damage due to the strain of the attack.`;
         }
 
-        enemy.health -= damage; // Applique les dégâts à l'ennemi
+        enemy.health -= damage;
         return message;
-    
-};
+    }
 
-//  attaque normale avec soin
-healAttack(enemy) {
-    const damage = 35;
-    enemy.health += damage;
-    
-};
+    // Méthode pour attaque normale avec soin
+    healAttack(enemy) {
+        const damage = 35;
+        enemy.health += damage;
+    }
+}
+
 
 
 
@@ -142,3 +145,6 @@ class Enemy {
     }
 }
 
+class boss {
+
+}
