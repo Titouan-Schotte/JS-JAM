@@ -1,11 +1,11 @@
 // Classe Projectile
 class Projectile {
-    constructor(originX, originY, targetX, targetY, player, minDistance, speed, damage) {
+    constructor(originX, originY, targetX, targetY, targetObj, minDistance, speed, damage) {
         this.originX = originX;
         this.originY = originY;
         this.targetX = targetX;
         this.targetY = targetY;
-        this.player = player;
+        this.targetObj = targetObj;
         this.minDistance = minDistance;
         this.speed = speed;
         this.damage = damage;
@@ -20,7 +20,7 @@ class Projectile {
 
         // Si la distance est inférieure à la distance minimale, infliger des dégâts au joueur
         if (distance < this.minDistance) {
-            this.player.takeDamage(this.damage);
+            this.targetObj.takeDamage(this.damage);
             this.reachedTarget = true; // Indique que le projectile a atteint sa cible
             console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
             return true; // Indique que le projectile a atteint sa cible
