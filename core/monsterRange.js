@@ -1,5 +1,63 @@
+// Classe Projectile
+class Projectile {
+    constructor(originX, originY, targetX, targetY, player, minDistance, speed, damage) {
+        this.originX = originX;
+        this.originY = originY;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.player = player;
+        this.minDistance = minDistance;
+        this.speed = speed;
+        this.damage = damage;
+        this.reachedTarget = false; // Indique si le projectile a atteint sa cible
+    }
 
-class Monster {
+// Méthode pour faire avancer le projectile vers sa cible
+    advance() {
+        let dx = this.targetX - this.originX;
+        let dy = this.targetY - this.originY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Si la distance est inférieure à la distance minimale, infliger des dégâts au joueur
+        if (distance < this.minDistance) {
+            this.player.takeDamage(this.damage);
+            this.reachedTarget = true; // Indique que le projectile a atteint sa cible
+            console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
+            return true; // Indique que le projectile a atteint sa cible
+        }
+
+        // Avancer le projectile selon sa vitesse
+        let ratio = this.speed / distance;
+        this.originX += dx * ratio;
+        this.originY += dy * ratio;
+
+        console.log("Projectile:", this.originX, this.originY);
+
+        return false; // Indique que le projectile n'a pas encore atteint sa cible
+    }
+
+
+
+    display() {
+        // Convertir les coordonnées du projectile en coordonnées du canevas
+        let displayX = this.originX * tileSize + tileSize / 2;
+        let displayY = this.originY * tileSize + tileSize / 2;
+
+        // Dessiner le projectile
+        fill(255, 0, 0);
+        ellipse(displayX, displayY, 10, 10);
+
+        // Vérifier si le projectile a atteint sa cible
+        if (this.reachedTarget) {
+            // Afficher un message lorsque le projectile atteint sa cible
+            textSize(20);
+            fill(255);
+        }
+    }
+}
+
+
+class RangedMonster  {
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -9,15 +67,21 @@ class Monster {
         this.speed = 0.0005;
         this.health = 100;
         this.isDead = false;
-        this.reach = 1;
+        this.reach = 5;
         this.strenght = 10;
+
+        //RANGED
+        this.projectileSpeed = 0.1; // Vitesse du projectile
+        this.projectileDamage = 5; // Dégâts infligés par le projectile
+        this.projectileMinDistance = 0.5; // Distance minimale pour infliger des dégâts
+        this.attackCooldown = 5; // Cooldown entre chaque attaque (en frames)
+        this.currentCooldown = 0; // Cooldown actuel
     }
 
     display() {
         if (!this.isDead){
             fill(255, 0, 0);
             ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
-
 
             // Dessiner la barre de vie au-dessus du monstre
             let barWidth = tileSize * 0.8;
@@ -31,6 +95,15 @@ class Monster {
             noFill();
             stroke(0);
             rect(barX, barY, barWidth, barHeight);
+
+            // Avancer chaque projectile et vérifier s'il atteint sa cible
+            for (let i = projectilesIn.length - 1; i >= 0; i--) {
+                let projectile = projectilesIn[i];
+                if (projectile.advance()) {
+                    // Si le projectile atteint sa cible, le retirer de la liste
+                    projectilesIn.splice(i, 1);
+                }
+            }
         }
 
     }
@@ -151,8 +224,8 @@ class Monster {
 
                 //ATTACK PLAYER
                 if(this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) <= this.reach){
-                    this.attack(this.strenght, player);
-                    return
+                    this.attack(); // Attaquer le joueur
+                    return;
                 }
 
                 // Vérifier si la nouvelle position est valide pour le monstre
@@ -162,10 +235,9 @@ class Monster {
                 }
             }
         }
-
     }
 
-    // Ajoutez une méthode pour vérifier la collision avec d'autres monstres
+    // Méthode pour vérifier la collision avec d'autres monstres
     isCollidingWithOtherMonsters(x, y) {
         for (let monster of monsters) {
             if (monster !== this && monster.x === x && monster.y === y) {
@@ -230,7 +302,7 @@ class Monster {
         // Enlever des points de vie
         this.health -= damage;
         if (this.health <= 0) {
-            this.death()
+            this.death();
         }
     }
 
@@ -247,7 +319,15 @@ class Monster {
         this.isDead = true;
     }
 
-    attack(damageAmount, target){
-        target.takeDamage(damageAmount)
+
+    attack() {
+        if (this.currentCooldown <= 0) {
+            let projectile = new Projectile(this.x, this.y, player.x, player.y, player, this.projectileMinDistance, this.projectileSpeed, this.projectileDamage);
+            projectilesIn.push(projectile); // Ajouter le projectile à la liste globale des projectiles
+            this.currentCooldown = this.attackCooldown; // Réinitialiser le cooldown
+        } else {
+            this.currentCooldown--;
+        }
     }
+
 }
