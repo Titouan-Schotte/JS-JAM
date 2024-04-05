@@ -87,10 +87,11 @@ class RangedMonster  {
         this.currentCooldown = 0; // Cooldown actuel
     }
 
-    display() {
+    display(imagesList) {
         if (!this.isDead){
             fill(255, 0, 0);
-            ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+            currentFrame = frameCount % numFrame;
+            image(imagesList[currentFrame], this.x*32, this.y*32, 44, 18);
 
             // Dessiner la barre de vie au-dessus du monstre
             let barWidth = tileSize * 0.8;

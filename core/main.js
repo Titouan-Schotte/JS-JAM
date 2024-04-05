@@ -7,6 +7,10 @@ let waveNumber = 0;
 let monstersPerWave = 1;
 let monstersSpawned = 0;
 let monstersAlive = 0;
+let images = [];
+let numFrame = 24;
+let currentFrame = 0;
+let newFrameCount = 0;
 
 let layer = [];
 let layerImages = [];
@@ -16,6 +20,10 @@ let gameState = "start"; // États possibles: "start", "playing", "gameOver"
 
 function preload() {
     tiledmap = loadTiledMap("map1", "core");
+    for (let i = 0; i < numFrame; i++) {
+        images[i]  = loadImage('assets/slime' + (i+1) + ".png");
+        console.log(images[i]);
+      }
 }
 
 function setup() {
@@ -110,7 +118,7 @@ function runGame() {
             monster.move();
             //monster.takeDamage(10)
             // Dessiner le monstre
-            monster.display();
+            monster.display(images);
             // Vérifier si le monstre est mort
             if (monster.isDead) {
                 monstersAlive--;
@@ -134,7 +142,7 @@ function runGame() {
         // Dessiner les monstres
         for (let monster of monsters) {
             // Dessiner le monstre
-            monster.display();
+            monster.display(images);
         }
         for (let i = projectilesIn.length - 1; i >= 0; i--) {
             let projectile = projectilesIn[i];
