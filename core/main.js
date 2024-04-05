@@ -7,8 +7,8 @@ let waveNumber = 0;
 let monstersPerWave = 1;
 let monstersSpawned = 0;
 let monstersAlive = 0;
-let images = [];
-let numFrame = 24;
+let imagesMonster = [];
+let numFrameImagesMonster = 24;
 let currentFrame = 0;
 let newFrameCount = 0;
 
@@ -20,10 +20,12 @@ let gameState = "start"; // États possibles: "start", "playing", "gameOver"
 
 function preload() {
     tiledmap = loadTiledMap("map1", "core");
-    for (let i = 0; i < numFrame; i++) {
-        images[i]  = loadImage('assets/slime' + (i+1) + ".png");
-        console.log(images[i]);
-      }
+    //Load Images Monster
+
+    for (let i = 0; i < numFrameImagesMonster; i++) {
+        imagesMonster[i]  = loadImage('assets/slime' + (i+1) + ".png");
+    }
+
 }
 
 function setup() {
@@ -118,7 +120,7 @@ function runGame() {
             monster.move();
             //monster.takeDamage(10)
             // Dessiner le monstre
-            monster.display(images);
+            monster.display(imagesMonster);
             // Vérifier si le monstre est mort
             if (monster.isDead) {
                 monstersAlive--;
@@ -142,7 +144,7 @@ function runGame() {
         // Dessiner les monstres
         for (let monster of monsters) {
             // Dessiner le monstre
-            monster.display(images);
+            monster.display(imagesMonster);
         }
         for (let i = projectilesIn.length - 1; i >= 0; i--) {
             let projectile = projectilesIn[i];
@@ -159,8 +161,8 @@ function runGame() {
 function displayGameInfo() {
     // Afficher le numéro de la vague
     textSize(20);
-    fill(0); // Couleur du texte en noir pour une meilleure visibilité
-    text("Vague " + waveNumber, 10, 30);
+    fill(255); // Couleur du texte en noir pour une meilleure visibilité
+    text("Vague " + waveNumber, 25, 18);
 
     // Afficher la barre de santé du joueur
     player.displayHealthBar();

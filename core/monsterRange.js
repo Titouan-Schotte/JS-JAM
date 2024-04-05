@@ -90,7 +90,10 @@ class RangedMonster  {
     display(imagesList) {
         if (!this.isDead){
             fill(255, 0, 0);
-            currentFrame = frameCount % numFrame;
+
+            if(frameCount%7 == 0){
+                currentFrame = frameCount % numFrameImagesMonster;
+            }
             image(imagesList[currentFrame], this.x*32, this.y*32, 44, 18);
 
             // Dessiner la barre de vie au-dessus du monstre
