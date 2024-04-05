@@ -2,8 +2,10 @@ class Player {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.health = 100; // Ajout de la variable health avec une valeur initiale de 100
+        this.health = 140; // Ajout de la variable health avec une valeur initiale de 100
+        this.maxhealth = 150; // Ajout de la variable health avec une valeur initiale de 100
         this.isDead = false;
+        this.damage = 10
     }
 
     display() {
@@ -52,10 +54,10 @@ class Player {
     displayHealthBar() {
         if(!this.isDead) {
             // Dessiner la barre de vie
-            let barWidth = 100;
-            let barHeight = 10;
-            let x = 10; // Position X de la barre de vie sur l'HUD
-            let y = 10; // Position Y de la barre de vie sur l'HUD
+            let barWidth = this.maxhealth;
+            let barHeight = 20;
+            let x = 10 + (1100 - this.maxhealth)/2; // Position X de la barre de vie sur l'HUD
+            let y = 772; // Position Y de la barre de vie sur l'HUD
 
             // Dessiner le contour de la barre de vie
             noFill();
@@ -63,7 +65,7 @@ class Player {
             rect(x, y, barWidth, barHeight);
 
             // Dessiner la barre de vie remplie en fonction de la santé actuelle du joueur
-            let healthWidth = map(this.health, 0, 100, 0, barWidth); // Mapping de la santé actuelle à la largeur de la barre
+            let healthWidth = map(this.health, 0,  this.maxhealth, 0, barWidth); // Mapping de la santé actuelle à la largeur de la barre
             fill(0, 255, 0);
             noStroke();
             rect(x, y, healthWidth, barHeight);
@@ -75,6 +77,7 @@ class Player {
 
     death() {
         this.isDead = true;
+        gameState = "gameOver"
     }
     takeDamage(damage) {
         // Enlever des points de vie

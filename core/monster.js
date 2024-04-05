@@ -156,7 +156,7 @@ class Monster {
                 }
 
                 // Vérifier si la nouvelle position est valide pour le monstre
-                if (this.isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
+                if (isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
                     this.x = nextPos.x;
                     this.y = nextPos.y;
                 }
@@ -218,13 +218,6 @@ class Monster {
         return neighbors;
     }
 
-    isValidMove(x, y) {
-        // Vérifie si la position (x, y) est valide sur la carte pour le monstre
-        // Ici, vous devez vérifier si la position correspond à une case vide sur la couche de collision
-        let index = Math.floor(x) + Math.floor(y) * mapData.width;
-        let tile = mapData.layers[0].data[index];
-        return tile === 0; // Renvoie true si la case est vide, sinon false
-    }
 
     takeDamage(damage) {
         // Enlever des points de vie
@@ -245,6 +238,9 @@ class Monster {
 
     death() {
         this.isDead = true;
+        //add player descrease life !
+        player.maxhealth-=10
+        player.damage += 1
     }
 
     attack(damageAmount, target){

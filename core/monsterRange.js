@@ -1,6 +1,9 @@
 // Classe Projectile
 class Projectile {
     constructor(originX, originY, targetX, targetY, targetObj, minDistance, speed, damage) {
+        this.baseOriginX = originX;
+        this.baseOriginY = originY;
+        this.originY = originY;
         this.originX = originX;
         this.originY = originY;
         this.targetX = targetX;
@@ -10,27 +13,38 @@ class Projectile {
         this.speed = speed;
         this.damage = damage;
         this.reachedTarget = false; // Indique si le projectile a atteint sa cible
+
     }
 
 // Méthode pour faire avancer le projectile vers sa cible
     advance() {
-        let dx = this.targetX - this.originX;
-        let dy = this.targetY - this.originY;
+        let dx = this.targetX - this.baseOriginX;
+        let dy = this.targetY - this.baseOriginY;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
+        let dxWithPlayer = this.originX - this.targetObj.x;
+        let dyWithPlayer = this.originY - this.targetObj.y;
+        let distanceWithPlayer  = Math.sqrt(dxWithPlayer * dxWithPlayer + dyWithPlayer * dyWithPlayer);
+
+
         // Si la distance est inférieure à la distance minimale, infliger des dégâts au joueur
-        if (distance < this.minDistance) {
+        if (distanceWithPlayer < this.minDistance ) {
             this.targetObj.takeDamage(this.damage);
             this.reachedTarget = true; // Indique que le projectile a atteint sa cible
             console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
             return true; // Indique que le projectile a atteint sa cible
         }
 
+
         // Avancer le projectile selon sa vitesse
         let ratio = this.speed / distance;
         this.originX += dx * ratio;
         this.originY += dy * ratio;
-
+        if (!isValidMoveForProjectiles(this.originX, this.originY)) {
+            this.reachedTarget = true; // Indique que le projectile a atteint sa cible
+            console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
+            return true; // Indique que le projectile a atteint sa cible
+        }
         console.log("Projectile:", this.originX, this.originY);
 
         return false; // Indique que le projectile n'a pas encore atteint sa cible
@@ -47,12 +61,6 @@ class Projectile {
         fill(255, 0, 0);
         ellipse(displayX, displayY, 10, 10);
 
-        // Vérifier si le projectile a atteint sa cible
-        if (this.reachedTarget) {
-            // Afficher un message lorsque le projectile atteint sa cible
-            textSize(20);
-            fill(255);
-        }
     }
 }
 
@@ -67,14 +75,15 @@ class RangedMonster  {
         this.speed = 0.0005;
         this.health = 100;
         this.isDead = false;
-        this.reach = 5;
-        this.strenght = 10;
+        this.reach = 10;
+        this.damage = 10;
+        this.minDistanceWithPlayer = 2;
 
         //RANGED
-        this.projectileSpeed = 0.1; // Vitesse du projectile
+        this.projectileSpeed = 0.2; // Vitesse du projectile
         this.projectileDamage = 5; // Dégâts infligés par le projectile
         this.projectileMinDistance = 0.5; // Distance minimale pour infliger des dégâts
-        this.attackCooldown = 5; // Cooldown entre chaque attaque (en frames)
+        this.attackCooldown = 2; // Cooldown entre chaque attaque (en frames)
         this.currentCooldown = 0; // Cooldown actuel
     }
 
@@ -222,14 +231,20 @@ class RangedMonster  {
                     return
                 }
 
+
                 //ATTACK PLAYER
-                if(this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) <= this.reach){
-                    this.attack(); // Attaquer le joueur
-                    return;
+                if (this.currentCooldown <= 0) {
+                    if(this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) <= this.reach && isValidTrajectoire(nextPos.x, nextPos.y, player.x, player.y)){
+                        this.attack(); // Attaquer le joueur
+                        this.currentCooldown = this.attackCooldown; // Réinitialiser le cooldown
+                        return;
+                    }
+                } else {
+                    this.currentCooldown--;
                 }
 
                 // Vérifier si la nouvelle position est valide pour le monstre
-                if (this.isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
+                if (this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) >= this.minDistanceWithPlayer && isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
                     this.x = nextPos.x;
                     this.y = nextPos.y;
                 }
@@ -290,14 +305,6 @@ class RangedMonster  {
         return neighbors;
     }
 
-    isValidMove(x, y) {
-        // Vérifie si la position (x, y) est valide sur la carte pour le monstre
-        // Ici, vous devez vérifier si la position correspond à une case vide sur la couche de collision
-        let index = Math.floor(x) + Math.floor(y) * mapData.width;
-        let tile = mapData.layers[0].data[index];
-        return tile === 0; // Renvoie true si la case est vide, sinon false
-    }
-
     takeDamage(damage) {
         // Enlever des points de vie
         this.health -= damage;
@@ -317,17 +324,32 @@ class RangedMonster  {
 
     death() {
         this.isDead = true;
+        //add player descrease life !
+        player.maxhealth-=10
+        player.damage += 1
     }
 
 
     attack() {
-        if (this.currentCooldown <= 0) {
-            let projectile = new Projectile(this.x, this.y, player.x, player.y, player, this.projectileMinDistance, this.projectileSpeed, this.projectileDamage);
-            projectilesIn.push(projectile); // Ajouter le projectile à la liste globale des projectiles
-            this.currentCooldown = this.attackCooldown; // Réinitialiser le cooldown
-        } else {
-            this.currentCooldown--;
+        let projectile = new Projectile(this.x, this.y, player.x, player.y, player, this.projectileMinDistance, this.projectileSpeed, this.projectileDamage);
+        projectilesIn.push(projectile); // Ajouter le projectile à la liste globale des projectiles
+    }
+
+}
+
+
+
+function isValidTrajectoire(originX, originY, targetX, targetY) {
+    while(originX != targetX && originY == targetY){
+        let dx = targetX - originX;
+        let dy = targetY - originY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        originX += dx * distance;
+        originY += dy * distance;
+        if(!isValidMove(originX, originY)){
+            return false
         }
     }
+    return true
 
 }
