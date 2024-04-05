@@ -22,7 +22,8 @@ function preload() {
     tiledmap = loadTiledMap("map1", "core");
     //Load Images Monster
     for (let i = 0; i < numFrameImagesMonsterRange; i++) {
-        imagesMonsterRange[i]  = loadImage('assets/slime' + (i+1) + ".png");
+        imagesMonsterRange[i]  = loadImage('assets/monster/slime' + (i+1) + ".png");
+        reverseImagesMonsterRange[i] = loadImage('assets/monster/reverseslime'+(i+1) + ".png");
     }
     //Load image Blood
     bloodImage = loadImage('assets/black-blood.png');

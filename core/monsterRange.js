@@ -1,4 +1,5 @@
 let imagesMonsterRange = [];
+let reverseImagesMonsterRange = [];
 let numFrameImagesMonsterRange = 8;
 // Classe Projectile
 class Projectile {
@@ -93,7 +94,13 @@ class RangedMonster  {
             if(frameCount%7 == 0){
                 currentFrame = frameCount % numFrameImagesMonsterRange;
             }
-            image(imagesList[currentFrame], this.x*32, this.y*32, 44, 18);
+
+            if (player.x <= this.x) {
+                image(reverseImagesMonsterRange[currentFrame], this.x*32, this.y*32, 44, 18);
+            } else if (player.x >= this.x) {
+                image(imagesMonsterRange[currentFrame], this.x*32, this.y*32, 44, 18);
+            }
+
 
             // Dessiner la barre de vie au-dessus du monstre
             let barWidth = tileSize * 0.8;
