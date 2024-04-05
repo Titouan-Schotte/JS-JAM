@@ -2,8 +2,8 @@ class Player {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.health = 140; // Ajout de la variable health avec une valeur initiale de 100
-        this.maxhealth = 150; // Ajout de la variable health avec une valeur initiale de 100
+        this.health = 1000; // Ajout de la variable health avec une valeur initiale de 100
+        this.maxhealth = 1000; // Ajout de la variable health avec une valeur initiale de 100
         this.isDead = false;
         this.damage = 10
     }
@@ -90,8 +90,8 @@ class Player {
     heal(amount) {
         // Soigner le joueur en ajoutant des points de vie
         this.health += amount;
-        if (this.health > 100) {
-            this.health = 100; // Limiter la santé maximale à 100
+        if (this.health > this.maxhealth) {
+            this.health = this.maxhealth; // Limiter la santé maximale
         }
     }
 }

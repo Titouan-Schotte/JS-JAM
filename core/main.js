@@ -7,10 +7,10 @@ let waveNumber = 0;
 let monstersPerWave = 1;
 let monstersSpawned = 0;
 let monstersAlive = 0;
-let imagesMonsterRange = [];
-let numFrameImagesMonster = 8;
+let frameCount = 0;
 let currentFrame = 0;
 let newFrameCount = 0;
+
 
 let layer = [];
 let layerImages = [];
@@ -21,14 +21,31 @@ let gameState = "start"; // États possibles: "start", "playing", "gameOver"
 function preload() {
     tiledmap = loadTiledMap("map1", "core");
     //Load Images Monster
-    for (let i = 0; i < numFrameImagesMonster; i++) {
+    for (let i = 0; i < numFrameImagesMonsterRange; i++) {
         imagesMonsterRange[i]  = loadImage('assets/slime' + (i+1) + ".png");
     }
+    //Load image Blood
+    bloodImage = loadImage('assets/black-blood.png');
+
+    //Load image Blood
+    instantkillimage = loadImage('assets/instant-kill.png');
 }
 
 function setup() {
     createCanvas(mapData.width * tileSize, mapData.height * tileSize);
     frameRate(60); // Définit le nombre de frames par seconde (FPS)
+
+
+    //launch bonus instant kill cooldown
+    setInterval(function (){
+        for (let i = instantkillbonus.length - 1; i >= 0; i--) {
+            b = instantkillbonus[i]
+            if(b.isUsed){
+                b.cool(i)
+            }
+        }
+
+    }, 1000)
 }
 
 function draw() {
@@ -74,10 +91,24 @@ function initializeGame() {
     layer = getTilemapLayers(tiledmap);
     layerImages = getTilemapImages(tiledmap);
     player = new Player(3, 3); // Initialisez le joueur
+    monsters = [];
+    waveNumber = 0;
+    monstersPerWave = 1;
+    monstersSpawned = 0;
+    monstersAlive = 0;
     createNewMonsterWave(monstersPerWave);
 }
 
 function runGame() {
+
+
+    if (monsters.length == 0) {
+        if (monstersPerWave < 20) {
+            monstersPerWave += 1;
+        }
+        createNewMonsterWave(monstersPerWave);
+    }
+    frameCount++;
     background(255); // Définit un fond blanc pour le jeu
     image(layerImages[0], 0, 0); // Dessine la première couche de la carte
     image(layerImages[1], 0, 0); // Dessine la seconde couche de la carte
@@ -98,24 +129,16 @@ function runGame() {
     }
 
     // Vérifier si tous les monstres sont morts
-    if (monstersAlive === 0) {
-        if (monstersPerWave < 20) {
-            monstersPerWave += 1;
-        }
-        createNewMonsterWave(monstersPerWave);
-    }
-    for (let i = projectilesIn.length - 1; i >= 0; i--) {
-        let projectile = projectilesIn[i];
-        projectile.display()
 
-    }
-    if (frameCount % 20 === 0) {
-        // Déplacer les monstres à intervalles réguliers
-        let monstersBuff = [];
-        for (let monster of monsters) {
+
+    // Déplacer les monstres à intervalles réguliers
+    let monstersBuff = [];
+    for (let monster of monsters) {
+        if(frameCount%monster.refreshFrame == 0){
             // Calculer le nouveau chemin du monstre
             monster.findShortestPath();
             monster.move();
+            monster.takeDamage(Math.floor(Math.random() * (5 - 1 + 1)) + 5)
             //monster.takeDamage(10)
             // Dessiner le monstre
             monster.display(imagesMonsterRange);
@@ -125,13 +148,20 @@ function runGame() {
             } else {
                 monstersBuff.push(monster);
             }
-        }
-        monsters = monstersBuff;
+        } else {
+            monster.display(imagesMonsterRange);
+            monstersBuff.push(monster);
 
-        // Rafraîchir les projectiles
+        }
+
+    }
+    monsters = monstersBuff;
+
+    // Rafraîchir les projectiles
+    if(frameCount%monstersBuff.length*40 == 0){
         for (let i = projectilesIn.length - 1; i >= 0; i--) {
-            console.log(projectilesIn.length)
             let projectile = projectilesIn[i];
+            projectile.speed = 0.2 / monstersBuff.length
             if (projectile.advance() || isValidMoveForProjectiles(projectile.x, projectile.y)) {
                 // Si le projectile atteint sa cible, le retirer de la liste
                 projectilesIn.splice(i, 1);
@@ -139,16 +169,33 @@ function runGame() {
             projectile.display()
         }
     } else {
-        // Dessiner les monstres
-        for (let monster of monsters) {
-            // Dessiner le monstre
-            monster.display(imagesMonsterRange);
-        }
         for (let i = projectilesIn.length - 1; i >= 0; i--) {
+
             let projectile = projectilesIn[i];
             projectile.display()
-
         }
+    }
+
+    //Afficher les bonus blood
+    for (let i = bloodbonus.length - 1; i >= 0; i--) {
+        let b = bloodbonus[i];
+        if(b.chechIfPlayerIsOn()){
+            b.useBonus(i)
+            return
+        }
+        b.display()
+    }
+
+    //Cooldown Instant kill
+
+    // Vérifier si une seconde s'est écoulée depuis le dernier timestamp
+    for (let i = instantkillbonus.length - 1; i >= 0; i--) {
+        let b = instantkillbonus[i];
+        if(b.chechIfPlayerIsOn()){
+            b.useBonus(i)
+        }
+
+        b.display()
     }
 
 
@@ -161,6 +208,15 @@ function displayGameInfo() {
     textSize(20);
     fill(255); // Couleur du texte en noir pour une meilleure visibilité
     text("Vague " + waveNumber, 25, 18);
+
+    if(isInstantKill){
+        image(instantkillimage, 500, 1);
+        text(": "+instantKillCoolCurrent, 540, 18);
+    }
+
+    image(bloodImage, 1002, -2)
+    text(": "+ bloodcount, 1040, 18);
+
 
     // Afficher la barre de santé du joueur
     player.displayHealthBar();
@@ -177,10 +233,19 @@ function generateRandomMonsterPosition() {
 }
 
 function createNewMonsterWave(numMonsters) {
-    for (let i = 0; i < numMonsters; i++) {
+    for (let i = 0; i < numMonsters+1; i++) {
         let position = generateRandomMonsterPosition();
         monsters.push(new RangedMonster(position.x, position.y));
     }
+
+    //Drop Instant Kill
+
+    if(waveNumber%2 == 0){
+        let position = generateRandomMonsterPosition();
+        instantkillbonus.push(new InstantKillBonus(position.x, position.y))
+    }
+
+    console.log(monsters)
     monstersSpawned += numMonsters;
     monstersAlive = numMonsters;
     waveNumber++;

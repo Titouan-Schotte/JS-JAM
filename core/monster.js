@@ -11,6 +11,7 @@ class Monster {
         this.isDead = false;
         this.reach = 1;
         this.strenght = 10;
+        this.refreshFrame = Math.floor(Math.random() * (24 - 18 + 1)) + 18;
     }
 
     display() {
@@ -220,6 +221,9 @@ class Monster {
 
 
     takeDamage(damage) {
+        if (isInstantKill){
+            this.death()
+        }
         // Enlever des points de vie
         this.health -= damage;
         if (this.health <= 0) {
@@ -238,9 +242,7 @@ class Monster {
 
     death() {
         this.isDead = true;
-        //add player descrease life !
-        player.maxhealth-=10
-        player.damage += 1
+        bloodbonus.push(new BloodBonus(this.x, this.y))
     }
 
     attack(damageAmount, target){

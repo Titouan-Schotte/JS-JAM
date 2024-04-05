@@ -1,3 +1,5 @@
+let imagesMonsterRange = [];
+let numFrameImagesMonsterRange = 8;
 // Classe Projectile
 class Projectile {
     constructor(originX, originY, targetX, targetY, targetObj, minDistance, speed, damage) {
@@ -31,7 +33,6 @@ class Projectile {
         if (distanceWithPlayer < this.minDistance ) {
             this.targetObj.takeDamage(this.damage);
             this.reachedTarget = true; // Indique que le projectile a atteint sa cible
-            console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
             return true; // Indique que le projectile a atteint sa cible
         }
 
@@ -42,10 +43,8 @@ class Projectile {
         this.originY += dy * ratio;
         if (!isValidMoveForProjectiles(this.originX, this.originY)) {
             this.reachedTarget = true; // Indique que le projectile a atteint sa cible
-            console.log("Projectile reached target at:", this.originX, this.originY, this.targetX, this.targetY);
             return true; // Indique que le projectile a atteint sa cible
         }
-        console.log("Projectile:", this.originX, this.originY);
 
         return false; // Indique que le projectile n'a pas encore atteint sa cible
     }
@@ -78,7 +77,7 @@ class RangedMonster  {
         this.reach = 10;
         this.damage = 10;
         this.minDistanceWithPlayer = 2;
-
+        this.refreshFrame = Math.floor(Math.random() * (25 - 20 + 1)) + 18;
         //RANGED
         this.projectileSpeed = 0.2; // Vitesse du projectile
         this.projectileDamage = 5; // Dégâts infligés par le projectile
@@ -92,7 +91,7 @@ class RangedMonster  {
             fill(255, 0, 0);
 
             if(frameCount%7 == 0){
-                currentFrame = frameCount % numFrameImagesMonster;
+                currentFrame = frameCount % numFrameImagesMonsterRange;
             }
             image(imagesList[currentFrame], this.x*32, this.y*32, 44, 18);
 
@@ -310,6 +309,9 @@ class RangedMonster  {
     }
 
     takeDamage(damage) {
+        if (isInstantKill){
+            this.death()
+        }
         // Enlever des points de vie
         this.health -= damage;
         if (this.health <= 0) {
@@ -328,9 +330,7 @@ class RangedMonster  {
 
     death() {
         this.isDead = true;
-        //add player descrease life !
-        player.maxhealth-=10
-        player.damage += 1
+        bloodbonus.push(new BloodBonus(this.x, this.y))
     }
 
 
