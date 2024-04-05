@@ -76,15 +76,24 @@ class Player {
         }
     }
     levelUP() {
-        // he need 25 souls to level up his level
-        if  (this.souls >= 25) {
+        let soulsRequired = 0;
+
+        if (this.level >= 1 && this.level <= 10) {//  Level 1-10: +25 
+            soulsRequired = 25 + (this.level - 1) * 2;
+        } else if (this.level > 10 && this.level <= 15) {
+            soulsRequired = 45 + (this.level - 11) * 5;
+        } else if (this.level > 15 && this.level <= 25) {
+            soulsRequired = 95 + (this.level - 16) * 10;
+        }
+        
+        if  (this.souls >= soulsRequired) {
             this.level++;
             this.heal +=50 ;// evry level  add +50 health will change this after
             this.attackPower+=4;//evry level add +4 attack power this's also will change
             this.defensePower+=1;//every level add +1 defense power
             this.lifesteal +=5;//evry  level add +5 lifesteal, it means that when the player give damages to an enemy 
             //he will heal hoimsealf with  5 hp
-            this.souls -=25 ;//
+            this.souls -=soulsRequired ;// after levelUP souls = 0
         } else {
             console.log("You don't have enough souls!");
         }
