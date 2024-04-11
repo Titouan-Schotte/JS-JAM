@@ -10,6 +10,7 @@ let monstersAlive = 0;
 let frameCount = 0;
 let currentFrame = 0;
 let newFrameCount = 0;
+let numFrameImages = 8;
 
 
 let layer = [];
@@ -21,10 +22,13 @@ let gameState = "start"; // États possibles: "start", "playing", "gameOver"
 function preload() {
     tiledmap = loadTiledMap("map1", "core");
     //Load Images Monster
-    for (let i = 0; i < numFrameImagesMonsterRange; i++) {
-        imagesMonsterRange[i]  = loadImage('assets/monster/slime' + (i+1) + ".png");
-        reverseImagesMonsterRange[i] = loadImage('assets/monster/reverseslime'+(i+1) + ".png");
+    for (let i = 0; i < numFrameImages; i++) {
+        monsterRangeImages[i]  = loadImage("assets/monster/slime" + (i+1) + ".png");
+        reverseMonsterImages[i] = loadImage("assets/monster/reverseslime"+(i+1) + ".png");
+        playerImages[i] = loadImage("assets/player/player"+(i+1) + ".png");
+        reversePlayerImages[i] = loadImage("assets/player/reverseplayer"+(i+1) + ".png");
     }
+
     //Load image Blood
     bloodImage = loadImage('assets/black-blood.png');
 
@@ -109,7 +113,11 @@ function initializeGame() {
 }
 
 function runGame() {
-    console.log(healthbonusarray)
+
+    if(frameCount%7 == 0){
+        currentFrame = frameCount % numFrameImages;
+    }
+
     //Player Attack
     if(isMousePressed){
         let currentTime = millis(); // Obtenir le temps actuel en millisecondes
@@ -144,8 +152,10 @@ function runGame() {
     // Déplacer le joueur en fonction des touches enfoncées
     if (keyIsDown(LEFT_ARROW)) {
         player.move(-playerSpeed, 0, "l");
+        lookLeft();
     } else if (keyIsDown(RIGHT_ARROW)) {
         player.move(playerSpeed, 0, "r");
+        lookRight();
     }
     if (keyIsDown(UP_ARROW)) {
         player.move(0, -playerSpeed, "u");
@@ -164,7 +174,7 @@ function runGame() {
             monster.move();
 
             // Dessiner le monstre
-            monster.display(imagesMonsterRange);
+            monster.display();
             // Vérifier si le monstre est mort
             if (monster.isDead) {
                 monstersAlive--;
@@ -172,7 +182,7 @@ function runGame() {
                 monstersBuff.push(monster);
             }
         } else {
-            monster.display(imagesMonsterRange);
+            monster.display();
             monstersBuff.push(monster);
 
         }

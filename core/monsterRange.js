@@ -1,6 +1,5 @@
-let imagesMonsterRange = [];
-let reverseImagesMonsterRange = [];
-let numFrameImagesMonsterRange = 8;
+let monsterRangeImages = [];
+let reverseMonsterImages = [];
 // Classe Projectile
 class Projectile {
     constructor(originX, originY, targetX, targetY, targetObj, minDistance, speed, damage) {
@@ -88,18 +87,14 @@ class RangedMonster  {
         this.currentCooldown = 0; // Cooldown actuel
     }
 
-    display(imagesList) {
+    display() {
         if (!this.isDead){
             fill(255, 0, 0);
 
-            if(frameCount%7 == 0){
-                currentFrame = frameCount % numFrameImagesMonsterRange;
-            }
-
             if (player.x <= this.x) {
-                image(reverseImagesMonsterRange[currentFrame], this.x*32, this.y*32, 44, 18);
+                image(reverseMonsterImages[currentFrame], this.x*32, this.y*32, 44, 18);
             } else if (player.x >= this.x) {
-                image(imagesMonsterRange[currentFrame], this.x*32, this.y*32, 44, 18);
+                image(monsterRangeImages[currentFrame], this.x*32, this.y*32, 44, 18);
             }
 
 

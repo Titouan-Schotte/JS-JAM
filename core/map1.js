@@ -136,7 +136,7 @@ if (typeof module !== 'undefined' && module.exports) {
            {
             "columns":8,
             "firstgid":1,
-            "image":"./tileset_resized.png",
+            "image":"../assets/tileset_resized.png",
             "imageheight":480,
             "imagewidth":256,
             "margin":0,

@@ -2,6 +2,22 @@ let projectileSize = 10
 let lastAttackTime = 0; // Variable pour stocker le temps du dernier coup
 let attackCooldown = 800; // Cooldown entre chaque attaque en millisecondes
 
+let reversePlayerImages = [];
+let playerImages = [];
+
+let isLookingLeft = false;
+let isLookingRight = true;
+
+function lookRight() {
+    isLookingRight = true;
+    isLookingLeft = false;
+}
+
+function lookLeft() {
+    isLookingLeft = true;
+    isLookingRight = false;
+}
+
 let isMousePressed = false;
 function mousePressed() {
     isMousePressed = true;
@@ -30,7 +46,13 @@ class Player {
     display() {
         if(!this.isDead) {
             fill(0, 0, 255);
-            ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+            // ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+             if (isLookingRight) {
+                image(playerImages[currentFrame], this.x*32, this.y*32, 36, 44);
+            } else if (isLookingLeft) {
+                image(reversePlayerImages[currentFrame], this.x*32, this.y*32, 36, 44);
+            }
+
         }
     }
 
