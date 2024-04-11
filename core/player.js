@@ -1,3 +1,16 @@
+let projectileSize = 10
+let lastAttackTime = 0; // Variable pour stocker le temps du dernier coup
+let attackCooldown = 800; // Cooldown entre chaque attaque en millisecondes
+
+let isMousePressed = false;
+function mousePressed() {
+    isMousePressed = true;
+}
+
+function mouseReleased() {
+    isMousePressed = false;
+}
+
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -6,6 +19,12 @@ class Player {
         this.maxhealth = 1000; // Ajout de la variable health avec une valeur initiale de 100
         this.isDead = false;
         this.damage = 10
+
+        this.projectileSpeed = 0.1; // Vitesse du projectile
+        this.projectileDamage = 50; // Dégâts infligés par le projectile
+        this.projectileMinDistance = 0.7*projectileSize/10; // Distance minimale pour infliger des dégâts
+        this.attackCooldown = 2; // Cooldown entre chaque attaque (en frames)
+        this.currentCooldown = 0; // Cooldown actuel
     }
 
     display() {
@@ -93,5 +112,80 @@ class Player {
         if (this.health > this.maxhealth) {
             this.health = this.maxhealth; // Limiter la santé maximale
         }
+    }
+
+    attack(mouseX, mouseY){
+        let projectile = new ProjectilePlayer(this.x, this.y, mouseX, mouseY, this.projectileMinDistance, this.projectileSpeed, this.projectileDamage);
+        projectilesIn.push(projectile); // Ajouter le projectile à la liste globale des projectiles
+    }
+
+}
+
+
+
+class ProjectilePlayer {
+    constructor(originX, originY, targetX, targetY, minDistance, speed, damage) {
+        this.baseOriginX = originX;
+        this.baseOriginY = originY;
+        this.originY = originY;
+        this.originX = originX;
+        this.originY = originY;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.minDistance = minDistance;
+        this.speed = speed;
+        this.damage = damage;
+        this.reachedTarget = false; // Indique si le projectile a atteint sa cible
+
+    }
+
+// Méthode pour faire avancer le projectile vers sa cible
+    advance() {
+        let dx = this.targetX - this.baseOriginX;
+        let dy = this.targetY - this.baseOriginY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+
+        for (let monster of monsters) {
+
+            let dxWithPlayer = this.originX - monster.x;
+            let dyWithPlayer = this.originY - monster.y;
+
+            let distanceWithPlayer  = Math.sqrt(dxWithPlayer * dxWithPlayer + dyWithPlayer * dyWithPlayer);
+
+
+            // Si la distance est inférieure à la distance minimale, infliger des dégâts au joueur
+            if (distanceWithPlayer < this.minDistance ) {
+                monster.takeDamage(this.damage);
+                this.reachedTarget = true; // Indique que le projectile a atteint sa cible
+                return true; // Indique que le projectile a atteint sa cible
+            }
+        }
+
+
+
+        // Avancer le projectile selon sa vitesse
+        let ratio = this.speed / distance;
+        this.originX += dx * ratio;
+        this.originY += dy * ratio;
+        if (!isValidMoveForProjectiles(this.originX, this.originY)) {
+            this.reachedTarget = true; // Indique que le projectile a atteint sa cible
+            return true; // Indique que le projectile a atteint sa cible
+        }
+
+        return false; // Indique que le projectile n'a pas encore atteint sa cible
+    }
+
+
+
+    display() {
+        // Convertir les coordonnées du projectile en coordonnées du canevas
+        let displayX = this.originX * tileSize + tileSize / 2;
+        let displayY = this.originY * tileSize + tileSize / 2;
+
+        // Dessiner le projectile
+        fill(255, 255, 0);
+        ellipse(displayX, displayY, projectileSize, projectileSize);
+
     }
 }

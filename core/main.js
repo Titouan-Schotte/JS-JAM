@@ -4,7 +4,7 @@ let projectilesIn = []; // Liste des projectiles en cours
 let tileSize = 32;
 let playerSpeed = 0.1; // Vitesse de déplacement du joueur
 let waveNumber = 0;
-let monstersPerWave = 1;
+let monstersPerWave = 3;
 let monstersSpawned = 0;
 let monstersAlive = 0;
 let frameCount = 0;
@@ -28,8 +28,11 @@ function preload() {
     //Load image Blood
     bloodImage = loadImage('assets/black-blood.png');
 
-    //Load image Blood
+    //Load image Instant Kill
     instantkillimage = loadImage('assets/instant-kill.png');
+
+    //Load image Nuclear Bomb
+    nuclearbombimage = loadImage('assets/nuclear-bomb.png');
 }
 
 function setup() {
@@ -45,7 +48,6 @@ function setup() {
                 b.cool(i)
             }
         }
-
     }, 1000)
 }
 
@@ -93,6 +95,9 @@ function initializeGame() {
     layerImages = getTilemapImages(tiledmap);
     player = new Player(3, 3); // Initialisez le joueur
     monsters = [];
+    nuclearbombbonus = [];
+    instantkillbonus = [];
+    bloodbonus = [];
     waveNumber = 0;
     monstersPerWave = 1;
     monstersSpawned = 0;
@@ -102,6 +107,22 @@ function initializeGame() {
 
 function runGame() {
 
+    //Player Attack
+    if(isMousePressed){
+        let currentTime = millis(); // Obtenir le temps actuel en millisecondes
+
+        // Vérifier si le cooldown est écoulé
+        if (currentTime - lastAttackTime > attackCooldown) {
+            // Réinitialiser le temps du dernier coup
+            lastAttackTime = currentTime;
+
+            // Effectuer l'attaque du joueur
+            if (mouseButton === LEFT) {
+                console.log(mouseX / tileSize, mouseY / tileSize);
+                player.attack(mouseX / tileSize, mouseY / tileSize);
+            }
+        }
+    }
 
     if (monsters.length == 0) {
         if (monstersPerWave < 20) {
@@ -128,7 +149,6 @@ function runGame() {
     } else if (keyIsDown(DOWN_ARROW)) {
         player.move(0, playerSpeed, "d");
     }
-
     // Vérifier si tous les monstres sont morts
 
 
@@ -139,8 +159,7 @@ function runGame() {
             // Calculer le nouveau chemin du monstre
             monster.findShortestPath();
             monster.move();
-            monster.takeDamage(Math.floor(Math.random() * (5 - 1 + 1)) + 5)
-            //monster.takeDamage(10)
+
             // Dessiner le monstre
             monster.display(imagesMonsterRange);
             // Vérifier si le monstre est mort
@@ -187,9 +206,8 @@ function runGame() {
         b.display()
     }
 
-    //Cooldown Instant kill
+    //Afficher Instant kill
 
-    // Vérifier si une seconde s'est écoulée depuis le dernier timestamp
     for (let i = instantkillbonus.length - 1; i >= 0; i--) {
         let b = instantkillbonus[i];
         if(b.chechIfPlayerIsOn()){
@@ -198,11 +216,22 @@ function runGame() {
 
         b.display()
     }
+    //Afficher Nuclear Bomb
 
+    for (let i = nuclearbombbonus.length - 1; i >= 0; i--) {
+        let b = nuclearbombbonus[i];
+        if(b.chechIfPlayerIsOn()){
+            b.useBonus(i)
+        }
+
+        b.display()
+    }
 
     // Afficher des informations comme le numéro de la vague et la barre de santé du joueur
     displayGameInfo();
 }
+
+
 
 function displayGameInfo() {
     // Afficher le numéro de la vague
@@ -214,6 +243,7 @@ function displayGameInfo() {
         image(instantkillimage, 500, 1);
         text(": "+instantKillCoolCurrent, 540, 18);
     }
+
 
     image(bloodImage, 1002, -2)
     text(": "+ bloodcount, 1040, 18);
@@ -239,13 +269,9 @@ function createNewMonsterWave(numMonsters) {
         monsters.push(new RangedMonster(position.x, position.y));
     }
 
-    //Drop Instant Kill
-
-    if(waveNumber%2 == 0){
-        let position = generateRandomMonsterPosition();
-        instantkillbonus.push(new InstantKillBonus(position.x, position.y))
+    if(attackCooldownRangedMob >= 1 && waveNumber%2==0){
+        attackCooldownRangedMob--
     }
-
     console.log(monsters)
     monstersSpawned += numMonsters;
     monstersAlive = numMonsters;

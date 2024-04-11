@@ -64,6 +64,7 @@ class Projectile {
     }
 }
 
+let attackCooldownRangedMob = 10;
 
 class RangedMonster  {
     constructor(x, y) {
@@ -83,7 +84,7 @@ class RangedMonster  {
         this.projectileSpeed = 0.2; // Vitesse du projectile
         this.projectileDamage = 5; // Dégâts infligés par le projectile
         this.projectileMinDistance = 0.5; // Distance minimale pour infliger des dégâts
-        this.attackCooldown = 2; // Cooldown entre chaque attaque (en frames)
+        this.attackCooldown = attackCooldownRangedMob; // Cooldown entre chaque attaque (en frames)
         this.currentCooldown = 0; // Cooldown actuel
     }
 
@@ -338,6 +339,28 @@ class RangedMonster  {
     death() {
         this.isDead = true;
         bloodbonus.push(new BloodBonus(this.x, this.y))
+
+        //Instant kill spawning
+        instantkillMobCountBeforeSpawning--
+        if(instantkillMobCountBeforeSpawning==0){
+            if(instantkillMobCountBeforeSpawningRef > 20){
+                instantkillMobCountBeforeSpawningRef--
+            }
+            instantkillMobCountBeforeSpawning=instantkillMobCountBeforeSpawningRef
+            let position = generateRandomMonsterPosition();
+            instantkillbonus.push(new InstantKillBonus(position.x, position.y))
+        }
+
+        //Nuclear Bomb spawning
+        nuclearbombMobCountBeforeSpawning--
+        if(nuclearbombMobCountBeforeSpawning==0){
+            if(nuclearbombMobCountBeforeSpawningRef > 30){
+                nuclearbombMobCountBeforeSpawningRef--
+            }
+            nuclearbombMobCountBeforeSpawning=nuclearbombMobCountBeforeSpawningRef
+            let position = generateRandomMonsterPosition();
+            nuclearbombbonus.push(new NuclearBombBonus(position.x, position.y))
+        }
     }
 
 

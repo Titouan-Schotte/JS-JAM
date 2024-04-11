@@ -1,27 +1,19 @@
-let bloodbonus = []
-let bloodImage;
-let bloodcount = 0;
-class BloodBonus {
+let nuclearbombbonus = []
+let nuclearbombimage;
+let nuclearbombMobCountBeforeSpawning = 65
+let nuclearbombMobCountBeforeSpawningRef = 65
+class NuclearBombBonus {
     constructor(x, y)  {
         this.isUsed = false
         this.x = x;
         this.y = y;
         this.grabRange = 1
-        bloodcount++
     }
 
     useBonus(i){
-        player.maxhealth *= 0.99
-        if(player.health > player.maxhealth){
-            player.health = player.maxhealth
-        }
-        player.projectileDamage *= 1.01
-        attackCooldown *= 0.99
-        projectileSize*=1.001
-        player.heal(player.health*0.01)
-
+        monsters = []
         this.isUsed = true
-        bloodbonus.splice(i, 1);
+        nuclearbombbonus.splice(i, 1);
     }
 
     chechIfPlayerIsOn(){
@@ -33,7 +25,7 @@ class BloodBonus {
     display() {
         if (!this.isUsed){
             fill(255, 0, 0);
-            image(bloodImage, this.x*32, this.y*32);
+            image(nuclearbombimage, this.x*32, this.y*32);
         }
     }
 

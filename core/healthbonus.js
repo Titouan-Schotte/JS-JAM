@@ -1,4 +1,4 @@
-let instantkillbonus = []
+let healthbonus = []
 let instantkillimage;
 let isInstantKill = false;
 let instantKillCoolCurrent = 0
