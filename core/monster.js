@@ -6,12 +6,12 @@ class Monster {
         this.baseX = x;
         this.baseY = y;
         this.path = []; // Chemin que le monstre doit suivre pour atteindre le joueur
-        this.speed = 0.0005;
-        this.health = 100;
+        this.speed = 0.001;
+        this.health = 500;
         this.isDead = false;
         this.reach = 1;
         this.strenght = 10;
-        this.refreshFrame = Math.floor(Math.random() * (24 - 18 + 1)) + 18;
+        this.refreshFrame = Math.floor(Math.random() * (20 - 15 + 1)) + 15;
     }
 
     display() {

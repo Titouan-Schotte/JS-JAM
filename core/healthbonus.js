@@ -1,11 +1,8 @@
-let healthbonus = []
-let instantkillimage;
-let isInstantKill = false;
-let instantKillCoolCurrent = 0
-let instantKillCoolObjective = 20
-let instantkillMobCountBeforeSpawning = 40
-let instantkillMobCountBeforeSpawningRef = 40
-class InstantKillBonus {
+let healthbonusarray = []
+let healthbonusimage;
+let healthMobCountBeforeSpawning = 20
+let healthMobCountBeforeSpawningRef = 20
+class HealthBonus {
     constructor(x, y)  {
         this.isUsed = false
         this.x = x;
@@ -13,21 +10,10 @@ class InstantKillBonus {
         this.grabRange = 1
     }
 
-    useBonus(){
+    useBonus(i){
+        player.health = player.maxhealth
         this.isUsed = true
-
-        isInstantKill = true
-        instantKillCoolCurrent = instantKillCoolObjective
-    }
-
-    cool(i){
-        instantKillCoolCurrent--
-        console.log(instantKillCoolCurrent)
-        if(0 >= instantKillCoolCurrent){
-            isInstantKill = false
-            instantkillbonus.splice(i, 1)
-            console.log("Finish !")
-        }
+        healthbonusarray.splice(i, 1);
     }
 
     chechIfPlayerIsOn(){
@@ -39,7 +25,7 @@ class InstantKillBonus {
     display() {
         if (!this.isUsed){
             fill(255, 0, 0);
-            image(instantkillimage, this.x*32, this.y*32);
+            image(healthbonusimage, this.x*32, this.y*32);
         }
     }
 

@@ -33,6 +33,9 @@ function preload() {
 
     //Load image Nuclear Bomb
     nuclearbombimage = loadImage('assets/nuclear-bomb.png');
+
+    //Load image Health Bonus
+    healthbonusimage = loadImage('assets/health.png');
 }
 
 function setup() {
@@ -106,7 +109,7 @@ function initializeGame() {
 }
 
 function runGame() {
-
+    console.log(healthbonusarray)
     //Player Attack
     if(isMousePressed){
         let currentTime = millis(); // Obtenir le temps actuel en millisecondes
@@ -227,6 +230,17 @@ function runGame() {
         b.display()
     }
 
+    //Afficher Health Bonus
+
+    for (let i = healthbonusarray.length - 1; i >= 0; i--) {
+        let b = healthbonusarray[i];
+        if(b.chechIfPlayerIsOn()){
+            b.useBonus(i)
+        }
+
+        b.display()
+    }
+
     // Afficher des informations comme le numéro de la vague et la barre de santé du joueur
     displayGameInfo();
 }
@@ -268,6 +282,13 @@ function createNewMonsterWave(numMonsters) {
         let position = generateRandomMonsterPosition();
         monsters.push(new RangedMonster(position.x, position.y));
     }
+    if(waveNumber%5==0){
+        for (let i = 0; i < Math.round(waveNumber/5); i++) {
+            let position = generateRandomMonsterPosition();
+            monsters.push(new Monster(position.x, position.y));
+        }
+    }
+
 
     if(attackCooldownRangedMob >= 1 && waveNumber%2==0){
         attackCooldownRangedMob--
