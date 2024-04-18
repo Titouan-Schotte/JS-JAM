@@ -149,18 +149,21 @@ function runGame() {
     // Dessiner le joueur
     player.display();
 
+    isPlayerStanding();
     // Déplacer le joueur en fonction des touches enfoncées
     if (keyIsDown(LEFT_ARROW)) {
         player.move(-playerSpeed, 0, "l");
-        lookLeft();
+        playerStanding = false;
     } else if (keyIsDown(RIGHT_ARROW)) {
         player.move(playerSpeed, 0, "r");
-        lookRight();
+        playerStanding = false;
     }
     if (keyIsDown(UP_ARROW)) {
         player.move(0, -playerSpeed, "u");
+        playerStanding = false;
     } else if (keyIsDown(DOWN_ARROW)) {
         player.move(0, playerSpeed, "d");
+        playerStanding = false;
     }
     // Vérifier si tous les monstres sont morts
 

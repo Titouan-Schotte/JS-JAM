@@ -5,18 +5,7 @@ let attackCooldown = 800; // Cooldown entre chaque attaque en millisecondes
 let reversePlayerImages = [];
 let playerImages = [];
 
-let isLookingLeft = false;
-let isLookingRight = true;
-
-function lookRight() {
-    isLookingRight = true;
-    isLookingLeft = false;
-}
-
-function lookLeft() {
-    isLookingLeft = true;
-    isLookingRight = false;
-}
+let playerStanding = true;
 
 let isMousePressed = false;
 function mousePressed() {
@@ -25,6 +14,14 @@ function mousePressed() {
 
 function mouseReleased() {
     isMousePressed = false;
+}
+
+function isPlayerStanding() {
+    if (keyIsDown()) {
+        playerStanding = false;
+    } else {
+        playerStanding = true;
+    }
 }
 
 class Player {
@@ -46,11 +43,13 @@ class Player {
     display() {
         if(!this.isDead) {
             fill(0, 0, 255);
-            // ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
-             if (isLookingRight) {
-                image(playerImages[currentFrame], this.x*32, this.y*32, 36, 44);
-            } else if (isLookingLeft) {
+
+            if (playerStanding) {
+                image(playerImages[0], this.x*32, this.y*32, 36, 44);
+            } else if (mouseX/tileSize <= this.x) {
                 image(reversePlayerImages[currentFrame], this.x*32, this.y*32, 36, 44);
+            } else if (mouseX/tileSize >= this.x) {
+                image(playerImages[currentFrame], this.x*32, this.y*32, 36, 44);
             }
 
         }
