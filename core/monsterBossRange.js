@@ -1,5 +1,5 @@
 let monsterBossRangeImages = [];
-let reverseBossMonsterImages = [];
+let reverseBossMonsterRangeImages = [];
 // Classe Projectile
 class RangedBossMonster  {
     constructor(x, y) {
@@ -26,7 +26,13 @@ class RangedBossMonster  {
     display() {
         if (!this.isDead){
             fill(255, 0, 0);
-            ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+            //ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+
+            if (player.x <= this.x) {
+                image(reverseBossMonsterRangeImages[currentFrame], this.x*32, (this.y-0.2)*32, 40, 50);
+            } else if (player.x >= this.x) {
+                image(monsterBossRangeImages[currentFrame], this.x*32, (this.y-0.2)*32, 40, 50);
+            }
 
 
             // Dessiner la barre de vie au-dessus du monstre

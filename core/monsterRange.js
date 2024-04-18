@@ -120,7 +120,6 @@ class RangedMonster  {
                 }
             }
         }
-
     }
     getRandomArbitrary(min, max) {
         return Math.random() * (max - min) + min;
@@ -333,14 +332,14 @@ class RangedMonster  {
 
     death() {
         this.isDead = true;
-        if(Math.floor(Math.random() * (100 - 0 + 1)) > 40){
+        if(Math.floor(Math.random() * (100 - 0 + 1)) > 50){
             bloodbonus.push(new BloodBonus(this.x, this.y))
         }
 
         //Instant kill spawning
         instantkillMobCountBeforeSpawning--
         if(instantkillMobCountBeforeSpawning==0){
-            if(instantkillMobCountBeforeSpawningRef > 40){
+            if(instantkillMobCountBeforeSpawningRef > 20){
                 instantkillMobCountBeforeSpawningRef--
             }
             instantkillMobCountBeforeSpawning=instantkillMobCountBeforeSpawningRef
@@ -351,7 +350,7 @@ class RangedMonster  {
         //Nuclear Bomb spawning
         nuclearbombMobCountBeforeSpawning--
         if(nuclearbombMobCountBeforeSpawning==0){
-            if(nuclearbombMobCountBeforeSpawningRef > 60){
+            if(nuclearbombMobCountBeforeSpawningRef > 30){
                 nuclearbombMobCountBeforeSpawningRef--
             }
             nuclearbombMobCountBeforeSpawning=nuclearbombMobCountBeforeSpawningRef
@@ -362,7 +361,7 @@ class RangedMonster  {
         //Health bonus spawning
         healthMobCountBeforeSpawning--
         if(healthMobCountBeforeSpawning==0){
-            if(healthMobCountBeforeSpawningRef > 50){
+            if(healthMobCountBeforeSpawningRef > 25){
                 healthMobCountBeforeSpawningRef--
             }
             healthMobCountBeforeSpawning=healthMobCountBeforeSpawningRef

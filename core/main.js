@@ -23,10 +23,14 @@ function preload() {
     tiledmap = loadTiledMap("map1", "core");
     //Load Images Monster
     for (let i = 0; i < numFrameImages; i++) {
-        monsterRangeImages[i]  = loadImage("assets/monster/slime" + (i+1) + ".png");
-        reverseMonsterImages[i] = loadImage("assets/monster/reverseslime"+(i+1) + ".png");
+        monsterRangeImages[i]  = loadImage("assets/monster/monsterRange/slime" + (i+1) + ".png");
+        reverseMonsterImages[i] = loadImage("assets/monster/monsterRange/reverseslime"+(i+1) + ".png");
         playerImages[i] = loadImage("assets/player/player"+(i+1) + ".png");
         reversePlayerImages[i] = loadImage("assets/player/reverseplayer"+(i+1) + ".png");
+        monsterBossRangeImages[i] = loadImage("assets/monster/bossRange/bossRange"+(i+1)+".png")
+        reverseBossMonsterRangeImages[i] = loadImage("assets/monster/bossRange/reverseBossRange"+(i+1) + ".png");
+        monsterBossCACImages[i] = loadImage("assets/monster/bossCAC/bossCAC"+(i+1)+".png")
+        reverseBossMonsterCACImages[i] = loadImage("assets/monster/bossCAC/reverseBossCAC"+(i+1)+".png")
     }
 
     //Load image Blood
@@ -57,30 +61,15 @@ function setup() {
         }
     }, 1000)
 }
-let paused = false; // Variable pour suivre l'état du jeu (en pause ou non)
-
 
 function draw() {
     if (gameState === "start") {
         drawStartScreen();
-    } else if (gameState === "playing" && !paused) {
+    } else if (gameState === "playing") {
         runGame();
     } else if (gameState === "gameOver") {
         drawGameOverScreen();
-    } else if (paused) {
-        drawPauseMenu(); // Dessiner le menu pause
     }
-}
-
-function drawPauseMenu() {
-    // Dessiner le menu pause
-    background(0, 150); // Fond noir semi-transparent pour le menu pause
-    fill(255); // Texte blanc
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text("Paused", width / 2, height / 2 - 20);
-    textSize(16);
-    text("Press ESCAPE to Resume", width / 2, height / 2 + 20);
 }
 
 function drawGameOverScreen() {
@@ -107,12 +96,8 @@ function keyPressed() {
         initializeGame();
     } else if (keyCode === ENTER && gameState === "gameOver") {
         location.reload()
-    } else if (keyCode === ESCAPE && gameState === "playing") {
-        // Inverser l'état de la pause
-        paused = !paused;
     }
 }
-
 
 function initializeGame() {
     // Initialisation du jeu
@@ -321,7 +306,7 @@ function createNewMonsterWave(numMonsters) {
         }
     }
     if(waveNumber%2==0){
-        for (let i = 0; i < Math.round(waveNumber/3); i++) {
+        for (let i = 0; i < Math.round(waveNumber/2); i++) {
             let position = generateRandomMonsterPosition();
             monsters.push(new RangedBossMonster(position.x, position.y));
         }

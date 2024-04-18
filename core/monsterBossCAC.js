@@ -1,3 +1,6 @@
+let monsterBossCACImages = [];
+let reverseBossMonsterCACImages = [];
+
 
 class MonsterBossCAC {
     constructor(x, y) {
@@ -17,7 +20,12 @@ class MonsterBossCAC {
     display() {
         if (!this.isDead){
             fill(255, 0, 0);
-            ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+            // ellipse(this.x * tileSize + tileSize / 2, this.y * tileSize + tileSize / 2, tileSize, tileSize);
+            if (player.x <= this.x) {
+                image(reverseBossMonsterCACImages[currentFrame], this.x*32, (this.y-0.2)*32, 40, 40);
+            } else if (player.x >= this.x) {
+                image(monsterBossCACImages[currentFrame], this.x*32, (this.y-0.2)*32, 40, 40);
+            }
 
 
             // Dessiner la barre de vie au-dessus du monstre
