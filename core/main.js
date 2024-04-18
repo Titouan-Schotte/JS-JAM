@@ -91,8 +91,7 @@ function keyPressed() {
         gameState = "playing";
         initializeGame();
     } else if (keyCode === ENTER && gameState === "gameOver") {
-        gameState = "start"; // Ou directement redémarrer le jeu avec 'playing'
-        initializeGame(); // Réinitialisez le jeu si nécessaire
+        location.reload()
     }
 }
 
@@ -109,6 +108,7 @@ function initializeGame() {
     monstersPerWave = 1;
     monstersSpawned = 0;
     monstersAlive = 0;
+
     createNewMonsterWave(monstersPerWave);
 }
 
@@ -295,7 +295,13 @@ function createNewMonsterWave(numMonsters) {
     if(waveNumber%5==0){
         for (let i = 0; i < Math.round(waveNumber/5); i++) {
             let position = generateRandomMonsterPosition();
-            monsters.push(new Monster(position.x, position.y));
+            monsters.push(new MonsterBossCAC(position.x, position.y));
+        }
+    }
+    if(waveNumber%2==0){
+        for (let i = 0; i < Math.round(waveNumber/2); i++) {
+            let position = generateRandomMonsterPosition();
+            monsters.push(new RangedBossMonster(position.x, position.y));
         }
     }
 

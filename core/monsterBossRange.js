@@ -1,17 +1,26 @@
-
-class Monster {
+let monsterBossRangeImages = [];
+let reverseBossMonsterImages = [];
+// Classe Projectile
+class RangedBossMonster  {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.baseX = x;
         this.baseY = y;
         this.path = []; // Chemin que le monstre doit suivre pour atteindre le joueur
-        this.speed = 0.001;
-        this.health = 500;
+        this.speed = 0.0005;
+        this.health = 400;
         this.isDead = false;
-        this.reach = 1;
-        this.strenght = 10;
-        this.refreshFrame = Math.floor(Math.random() * (20 - 15 + 1)) + 15;
+        this.reach = 15;
+        this.damage = 40;
+        this.minDistanceWithPlayer = 4;
+        this.refreshFrame = Math.floor(Math.random() * (25 - 20 + 1)) + 18;
+        //RANGED
+        this.projectileSpeed = 0.4; // Vitesse du projectile
+        this.projectileDamage = 5; // Dégâts infligés par le projectile
+        this.projectileMinDistance = 0.6; // Distance minimale pour infliger des dégâts
+        this.attackCooldown = 7; // Cooldown entre chaque attaque (en frames)
+        this.currentCooldown = 0; // Cooldown actuel
     }
 
     display() {
@@ -21,14 +30,14 @@ class Monster {
 
 
             // Dessiner la barre de vie au-dessus du monstre
-            let barWidth = tileSize * 0.8;
+            let barWidth = tileSize * 1.3;
             let barHeight = 5;
             let barX = this.x * tileSize + (tileSize - barWidth) / 2;
             let barY = this.y * tileSize - 10;
 
             // Dessiner la barre de vie
-            fill(0, 255, 0);
-            rect(barX, barY, barWidth * (this.health / 100), barHeight);
+            fill(160, 255, 0);
+            rect(barX, barY, barWidth * (this.health / 500), barHeight);
             noFill();
             stroke(0);
             rect(barX, barY, barWidth, barHeight);
@@ -150,23 +159,28 @@ class Monster {
                     return
                 }
 
+
                 //ATTACK PLAYER
-                if(this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) <= this.reach){
-                    this.attack(this.strenght, player);
-                    return
+                if (this.currentCooldown <= 0) {
+                    if(this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) <= this.reach && isValidTrajectoire(nextPos.x, nextPos.y, player.x, player.y)){
+                        this.attack(); // Attaquer le joueur
+                        this.currentCooldown = this.attackCooldown; // Réinitialiser le cooldown
+                        return;
+                    }
+                } else {
+                    this.currentCooldown--;
                 }
 
                 // Vérifier si la nouvelle position est valide pour le monstre
-                if (isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
+                if (this.euclidienne(nextPos.x, nextPos.y, player.x, player.y) >= this.minDistanceWithPlayer && isValidMove(nextPos.x, nextPos.y) && !this.isCollidingWithOtherMonsters(nextPos.x, nextPos.y) && !this.isCollidingWithPlayer(nextPos.x, nextPos.y)) {
                     this.x = nextPos.x;
                     this.y = nextPos.y;
                 }
             }
         }
-
     }
 
-    // Ajoutez une méthode pour vérifier la collision avec d'autres monstres
+    // Méthode pour vérifier la collision avec d'autres monstres
     isCollidingWithOtherMonsters(x, y) {
         for (let monster of monsters) {
             if (monster !== this && monster.x === x && monster.y === y) {
@@ -219,7 +233,6 @@ class Monster {
         return neighbors;
     }
 
-
     takeDamage(damage) {
         if (isInstantKill){
             this.death()
@@ -227,7 +240,7 @@ class Monster {
         // Enlever des points de vie
         this.health -= damage;
         if (this.health <= 0) {
-            this.death()
+            this.death();
         }
     }
 
@@ -242,10 +255,100 @@ class Monster {
 
     death() {
         this.isDead = true;
-        bloodbonus.push(new BloodBonus(this.x, this.y))
+        if(Math.floor(Math.random() * (100 - 0 + 1)) > 50){
+            bloodbonus.push(new BloodBonus(this.x, this.y))
+        }
+
+        //Instant kill spawning
+        instantkillMobCountBeforeSpawning--
+        if(instantkillMobCountBeforeSpawning==0){
+            if(instantkillMobCountBeforeSpawningRef > 20){
+                instantkillMobCountBeforeSpawningRef--
+            }
+            instantkillMobCountBeforeSpawning=instantkillMobCountBeforeSpawningRef
+            let position = generateRandomMonsterPosition();
+            instantkillbonus.push(new InstantKillBonus(position.x, position.y))
+        }
+
+        //Nuclear Bomb spawning
+        nuclearbombMobCountBeforeSpawning--
+        if(nuclearbombMobCountBeforeSpawning==0){
+            if(nuclearbombMobCountBeforeSpawningRef > 30){
+                nuclearbombMobCountBeforeSpawningRef--
+            }
+            nuclearbombMobCountBeforeSpawning=nuclearbombMobCountBeforeSpawningRef
+            let position = generateRandomMonsterPosition();
+            nuclearbombbonus.push(new NuclearBombBonus(position.x, position.y))
+        }
+
+        //Health bonus spawning
+        healthMobCountBeforeSpawning--
+        if(healthMobCountBeforeSpawning==0){
+            if(healthMobCountBeforeSpawningRef > 25){
+                healthMobCountBeforeSpawningRef--
+            }
+            healthMobCountBeforeSpawning=healthMobCountBeforeSpawningRef
+            let position = generateRandomMonsterPosition();
+            healthbonusarray.push(new HealthBonus(position.x, position.y))
+        }
+
     }
 
-    attack(damageAmount, target){
-        target.takeDamage(damageAmount)
+
+    attack() {
+        // Nombre de projectiles à lancer
+        let numProjectiles = 3;
+
+        // Vecteur directionnel de la droite AB (joueur - monstre)
+        let dx = player.x - this.x;
+        let dy = player.y - this.y;
+
+        // Calcul de la longueur du vecteur
+        let length = sqrt(dx * dx + dy * dy);
+
+        // Normalisation du vecteur (unité)
+        dx /= length;
+        dy /= length;
+
+        // Liste des angles aléatoires pour chaque projectile
+        let angles = [];
+        for (let i = 0; i < numProjectiles; i++) {
+            angles.push(random(-PI / 4, PI / 4)); // Angle aléatoire entre -45° et 45°
+        }
+
+        // Création et lancement des projectiles avec des directions aléatoires
+        for (let i = 0; i < numProjectiles; i++) {
+            // Rotation du vecteur directionnel par l'angle aléatoire
+            let angle = angles[i];
+            let rotatedDX = cos(angle) * dx - sin(angle) * dy;
+            let rotatedDY = sin(angle) * dx + cos(angle) * dy;
+
+            // Création du projectile avec la direction rotatée
+            let projectile = new Projectile(this.x, this.y, rotatedDX*32, rotatedDY*32, player, this.projectileMinDistance, this.projectileSpeed, this.projectileDamage);
+
+            // Ajout du projectile à la liste globale des projectiles
+            projectilesIn.push(projectile);
+        }
     }
+
+
+
+
+}
+
+
+
+function isValidTrajectoire(originX, originY, targetX, targetY) {
+    while(originX != targetX && originY == targetY){
+        let dx = targetX - originX;
+        let dy = targetY - originY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        originX += dx * distance;
+        originY += dy * distance;
+        if(!isValidMove(originX, originY)){
+            return false
+        }
+    }
+    return true
+
 }
