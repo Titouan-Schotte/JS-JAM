@@ -62,8 +62,10 @@
     <div style="position: absolute; top: 20px; left: 20px; z-index: 9999;">
         <audio id="audio">
             <source src="audio/AFTER MOVIE HUMAN EYES BAND CONCERT AU BADABOUM.mp3" type="audio/mpeg">
+            <source src="144Troy - All In(MP3_128K).mp3" type="audio/mpeg">
         </audio>
         <button id="playPauseBTn" onclick="playPause()">Play Sound &#9658;</button>
+        <button onclick="changeMusic()">Next Music &#9654;</button>
         &nbsp;
         &nbsp;
         <button>Stop Sound &#9611;</button>
@@ -108,6 +110,24 @@
         playPauseBTn.innerHTML = "Pause Sound &#9612;&#9612;";
     }
     }
+    function changeMusic() {
+    // Incrémentez l'index de la piste audio
+    count++;
+
+    // Vérifiez si l'index dépasse la longueur de la playlist
+    if (count >= playlist.length) {
+        count = 0; // Revenez au début de la playlist
+    }
+
+    // Mettez à jour la source audio avec la nouvelle piste
+    audio.src = playlist[count];
+
+    // Jouez automatiquement la nouvelle piste si elle était en cours de lecture
+    if (!audio.paused) {
+        audio.play();
+        playPauseBTn.innerHTML = "Pause Sound &#9612;&#9612;";
+    }
+}
     </script>
 </body>
 </html>
