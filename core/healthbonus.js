@@ -1,7 +1,7 @@
 let healthbonusarray = []
 let healthbonusimage;
-let healthMobCountBeforeSpawning = 30
-let healthMobCountBeforeSpawningRef = 30
+let healthMobCountBeforeSpawning = 20
+let healthMobCountBeforeSpawningRef = 20
 class HealthBonus {
     constructor(x, y)  {
         this.isUsed = false

@@ -23,14 +23,10 @@ function preload() {
     tiledmap = loadTiledMap("map1", "core");
     //Load Images Monster
     for (let i = 0; i < numFrameImages; i++) {
-        monsterRangeImages[i]  = loadImage("assets/monster/monsterRange/slime" + (i+1) + ".png");
-        reverseMonsterImages[i] = loadImage("assets/monster/monsterRange/reverseslime"+(i+1) + ".png");
+        monsterRangeImages[i]  = loadImage("assets/monster/slime" + (i+1) + ".png");
+        reverseMonsterImages[i] = loadImage("assets/monster/reverseslime"+(i+1) + ".png");
         playerImages[i] = loadImage("assets/player/player"+(i+1) + ".png");
         reversePlayerImages[i] = loadImage("assets/player/reverseplayer"+(i+1) + ".png");
-        monsterBossRangeImages[i] = loadImage("assets/monster/bossRange/bossRange"+(i+1)+".png")
-        reverseBossMonsterRangeImages[i] = loadImage("assets/monster/bossRange/reverseBossRange"+(i+1) + ".png");
-        monsterBossCACImages[i] = loadImage("assets/monster/bossCAC/bossCAC"+(i+1)+".png")
-        reverseBossMonsterCACImages[i] = loadImage("assets/monster/bossCAC/reverseBossCAC"+(i+1)+".png")
     }
 
     //Load image Blood
@@ -61,25 +57,62 @@ function setup() {
         }
     }, 1000)
 }
+let MenuPause = false;
+let interval;
+
+document.addEventListener('keydown', function(event) {
+    if (event.which === 80) { // Touche "p"
+        if (MenuPause) {
+            resumeGame();
+        } else {
+            drawPauseMenu();
+        }
+    }
+});
+
+function drawPauseMenu() {
+    clearInterval(interval); // Supprime l'intervalle du jeu
+    MenuPause = true;
+    canvas.style.opacity = 0.5;
+    fill(0, 150);
+    rect(0, 0, width, height);
+    fill(255);
+    textSize(32);
+    text("PAUSE", width / 2, height / 2 - 20);
+    textSize(18);
+    text("Press 'P' to Resume ", width / 2, height / 2 + 20);
+}
+
+function resumeGame() {
+    MenuPause = false;
+    canvas.style.opacity = 1;
+    interval = setInterval(runGame, 20); // Crée un nouvel intervalle du jeu
+}
 
 function draw() {
     if (gameState === "start") {
         drawStartScreen();
     } else if (gameState === "playing") {
         runGame();
+        if (key === 'p' || keyCode === 'P') {
+            drawPauseMenu();
+        }
     } else if (gameState === "gameOver") {
         drawGameOverScreen();
     }
 }
 
+
 function drawGameOverScreen() {
     background(0); // Fond noir
     fill(255); // Texte blanc
     textSize(32);
-    textAlign(CENTER, CENTER);
+    textAlign(CENTER, CENTER);  
     text("Game Over", width / 2, height / 2 - 20);
     textSize(16);
     text("Press ENTER to Restart", width / 2, height / 2 + 20);
+    text("", width / 2, height / 2 + 20);
+
 }
 
 function drawStartScreen() {
@@ -87,17 +120,48 @@ function drawStartScreen() {
     fill(255); // Texte blanc
     textSize(32);
     textAlign(CENTER, CENTER);
-    text("Press ENTER to Start", width / 2, height / 2);
+    
+    // Utilisez une police de caractères stylisée (remplacez "HorrorFont" par le nom de votre police)
+    textFont("HorrorFont"); 
+    // Augmentez la taille du texte
+    textSize(40); 
+    // Changez la couleur du texte (rouge, vert foncé, etc.)
+    fill(255, 0, 0); 
+    // Affichez le texte "Attention!" avec une marge au-dessus du texte principal
+    text("Attention!", width / 2, height / 2 - 80);
+    
+    // Rétablissez la taille et la couleur du texte pour le texte principal
+    textSize(32); 
+    fill(255);
+    // Affichez le texte principal avec le message d'avertissement
+    text("You have only one chance to use Pause.", width / 2, height / 2);
+    text("After that, you will just speed up the game.", width / 2, height / 2 + 40);
+    // Affichez une invite pour démarrer le jeu
+    text("Press ENTER to Start", width / 2, height / 2 + 120);
 }
+
+
+
 
 function keyPressed() {
     if (keyCode === ENTER && gameState === "start") {
         gameState = "playing";
         initializeGame();
     } else if (keyCode === ENTER && gameState === "gameOver") {
-        location.reload()
+        gameState = "start"; // Ou directement redémarrer le jeu avec 'playing'
+        initializeGame(); // Réinitialisez le jeu si nécessaire
+    } else if (key === 'p' || key === 'P') { 
+        MenuPause = !MenuPause; // Inverse l'état de MenuPause
+        if (MenuPause) {
+            Loop(); // Met en pause l'animation lorsque MenuPause est vrai
+        } else {
+            noLoop();
+            //runGame();
+        }
     }
 }
+// femre le pause 
+
 
 function initializeGame() {
     // Initialisation du jeu
@@ -112,7 +176,6 @@ function initializeGame() {
     monstersPerWave = 1;
     monstersSpawned = 0;
     monstersAlive = 0;
-
     createNewMonsterWave(monstersPerWave);
 }
 
@@ -302,13 +365,7 @@ function createNewMonsterWave(numMonsters) {
     if(waveNumber%5==0){
         for (let i = 0; i < Math.round(waveNumber/5); i++) {
             let position = generateRandomMonsterPosition();
-            monsters.push(new MonsterBossCAC(position.x, position.y));
-        }
-    }
-    if(waveNumber%2==0){
-        for (let i = 0; i < Math.round(waveNumber/2); i++) {
-            let position = generateRandomMonsterPosition();
-            monsters.push(new RangedBossMonster(position.x, position.y));
+            monsters.push(new Monster(position.x, position.y));
         }
     }
 
@@ -333,3 +390,87 @@ function isValidMoveForProjectiles(x, y) {
     let tile = mapData.layers[0].data[index];
     return tile === 0 || tile === 1;
 }
+
+// partie de menu de pause
+// let MenuPause = false;
+//     //function pour le affiche le menu
+//     function drawPauseMenu(){
+//         fill(0,150)
+//         rect(0,0,width,height);
+//         fill(255);
+//         textSize(32)
+//         text("PAUSE", width / 2, height / 2-20);
+//         textSize(18);
+//         text("Press 'P' to Resume ", width / 2 , height / 2 +20 );   
+//     } 
+   // function pour detecter les touches
+    // function keyPressed(){
+    //     if (key === ENTER && gameState === 'start'){
+    //         gameState = " playing";
+    //         initializeGame();
+    //     } else if ( keyCode === ENTER && gameState === "gameOver"){
+    //          gameState = "start";
+    //          initializeGame() ;
+    //     } else if (key === 'p' || key === 'p'){ 
+    //         MenuPause=!MenuPause;
+    //     }
+    // }
+    // fonnction pour dessiner 
+    // function draw(){
+    //     if (gameState === "start") {
+    //         drawStartScreen();
+    //     } else if (gameState === "playing") {
+    //         runGame();
+    //         if (MenuPaused) {
+    //             drawPauseMenu(); // Afficher le menu de pause si le jeu est en pause
+    //         }
+    //     } else if (gameState === "gameOver") {
+    //         drawGameOverScreen();
+    //     }
+    // }
+//fun for the Menu
+
+
+
+
+
+
+// let  pauseMenuOpen = false;
+// $("#pause-button").click(() => {
+//     $("#game-container").toggleClass("blur");
+//     $("#menu-overlay").fadeToggle();    
+//     pauseMenuOpen = !pauseMenuOpen;
+// });
+// $(".close-btn").click(()=>{
+//     $("#menu-overlay").hide();
+//     $("#game-container").removeClass("blur")
+//     pauseMenuOpen=false;
+// })
+
+// $('#resume').click(() => {
+//     $('#menu-overlay').hide();
+//     gameLoop();
+// });
+
+// $('#restart').click(() => {
+//     location.reload()
+// });
+
+// $('#quit').click(() => {
+//     window.location.href="../html/homepage.html";
+// });
+
+// // gestion des touches pour les actions du joueur
+// document.body.addEventListener('keydown', (event) => {
+//     if (!pauseMenuOpen && event.keyCode in keysDown) {
+//         keysDown[event.keyCode] = true;
+//     }
+// });
+
+// document.body.addEventListener('keyup', (event) => {
+//     if (!pauseMenuOpen && event.keyCode in keysDown) {
+//         delete keysDown[event.keyCode]; 
+//         }
+// });
+
+

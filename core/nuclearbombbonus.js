@@ -1,7 +1,7 @@
 let nuclearbombbonus = []
 let nuclearbombimage;
-let nuclearbombMobCountBeforeSpawning = 80
-let nuclearbombMobCountBeforeSpawningRef = 80
+let nuclearbombMobCountBeforeSpawning = 65
+let nuclearbombMobCountBeforeSpawningRef = 65
 class NuclearBombBonus {
     constructor(x, y)  {
         this.isUsed = false
