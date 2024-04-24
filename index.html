@@ -14,28 +14,100 @@
 
 
     <script src="./core/player.js" defer></script>
-    <script src="./core/monsterBossCAC.js" defer></script>
+    <script src="./core/monster.js" defer></script>
     <script src="./core/bloodbonus.js" defer></script>
     <script src="./core/instantkillbonus.js" defer></script>
     <script src="./core/nuclearbombbonus.js" defer></script>
     <script src="./core/healthbonus.js" defer></script>
     <script src="./core/monsterRange.js" defer></script>
-    <script src="./core/monsterBossRange.js" defer></script>
 
     <script src="./core/main.js" defer></script>
+       <style>
+        /* essyer pour un style les buton */
+            button{
+                background-color: rgb(30, 118, 118);
+                border: none;
+                color: white;/* tesxt blanc*/
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                transition-duration: 0.4s;
+            }
+            /*effet pour  le boutton au survol */
+            button:hover {background-color: #454545; /*ledrement plus foncé au survol */
+            }
+       </style>
 
 </head>
 <body>
+    
     <style>
         body,html {
-                margin: 0px;
-                padding: 0px;
-                display: flex;
-                justify-content: center;
-                align-items:center;
-                height:100%;
-                background-color: black;
-            }
+            margin: 0px;
+            padding: 0px;
+            display: flex;
+            justify-content: center;
+            align-items:center;
+            height:100%;
+            background-color: black;
+        }
     </style>
+
+    <!-- Contrôles audio -->
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 9999;">
+        <audio id="audio">
+            <source src="audio/Benzz - Je M_appelle ft. Tion Wayne _ French Montana [Music Video] _ GRM Daily(MP3_320K).mp3" type="audio/mpeg">
+        </audio>
+        <button id="playPauseBTn" onclick="playPause()">Play Sound &#9658;</button>
+        &nbsp;
+        &nbsp;
+        <button>Stop Sound &#9611;</button>
+    </div>
+
+    <!-- Conteneur du jeu -->
+    <div id="game-container">
+        <!-- Le contenu du jeu sera affiché ici -->
+    </div>
+
+    <script>
+        var audio = document.getElementById("audio");
+        var playPauseBTn = document.getElementById("playPauseBTn");
+        var count = 0; 
+       
+        function playPause(){
+            if (count == 0) {
+                count = 1;
+                audio.play();
+                playPauseBTn.innerHTML = "Pause Sound &#9612;&#9612;";
+            } else {
+                count = 0;
+                audio.pause();
+                playPauseBTn.innerHTML = "Play Sound &#9658;";
+            }
+        }
+        function changeMusic() {
+    // Incrémentez l'index de la piste audio
+    count++;
+
+    // Vérifiez si l'index dépasse la longueur de la playlist
+    if (count >= playlist.length) {
+        count = 0; // Revenez au début de la playlist
+    }
+
+    // Mettez à jour la source audio avec la nouvelle piste
+    audio.src = playlist[count];
+
+    // Jouez automatiquement la nouvelle piste si elle était en cours de lecture
+    if (audio.paused) {
+        audio.play();
+        playPauseBTn.innerHTML = "Pause Sound &#9612;&#9612;";
+    }
+    }
+    </script>
 </body>
 </html>
