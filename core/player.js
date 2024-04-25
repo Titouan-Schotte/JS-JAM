@@ -44,8 +44,10 @@ class Player {
         if(!this.isDead) {
             fill(0, 0, 255);
 
-            if (playerStanding) {
-                image(playerImages[0], this.x*32, this.y*32, 36, 44);
+            if (playerStanding && mouseX/tileSize <= this.x) {
+                image(reversePlayerImages[0], this.x*32, this.y*32, 36, 44);
+            } else if (playerStanding && mouseX/tileSize >= this.x) {
+                image(playerImages[0], this.x*32, this.y*32, 36, 44)
             } else if (mouseX/tileSize <= this.x) {
                 image(reversePlayerImages[currentFrame], this.x*32, this.y*32, 36, 44);
             } else if (mouseX/tileSize >= this.x) {

@@ -3,8 +3,8 @@ let instantkillimage;
 let isInstantKill = false;
 let instantKillCoolCurrent = 0
 let instantKillCoolObjective = 20
-let instantkillMobCountBeforeSpawning = 40
-let instantkillMobCountBeforeSpawningRef = 40
+let instantkillMobCountBeforeSpawning = 60
+let instantkillMobCountBeforeSpawningRef = 60
 class InstantKillBonus {
     constructor(x, y)  {
         this.isUsed = false
